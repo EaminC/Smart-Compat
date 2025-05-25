@@ -1,107 +1,114 @@
-# 📦 Package Conflict Detection Tool
+# 🔍 Compat - Advanced Python Package Conflict Detection Tool
 
-A comprehensive Python package conflict detection tool with intelligent features and multiple detection modes.
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/EaminC/compat)
+[![Python](https://img.shields.io/badge/python-3.7+-green.svg)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 🌟 Features
+A comprehensive and intelligent Python package conflict detection tool with advanced PyPI-based analysis, smart suggestions, and multiple detection modes.
 
-- **✅ Version Compatibility Detection** - Check if specified versions are compatible
-- **✅ Package Existence Validation** - Verify if versions exist on PyPI
-- **✅ Smart Suggestions** - Spelling correction and similar package suggestions
-- **✅ System-Level Conflict Detection** - Detect CUDA, cuDNN version conflicts
-- **✅ Transitive Dependency Analysis** - Check indirect dependency version conflicts
-- **✅ Hypothetical Detection** - PyPI-based analysis independent of local installations
+## 🌟 Key Features
+
+- **🎯 Accurate Conflict Detection** - PyPI-based analysis with proper dependency parsing
+- **🔧 Multiple Detection Modes** - From simple YES/NO to comprehensive reports
+- **📋 Requirements.txt Analysis** - Compare multiple dependency files intelligently
+- **🧠 Smart Suggestions** - Typo corrections, similar packages, and version recommendations
+- **⚙️ System-Level Analysis** - CUDA/cuDNN version conflicts and transitive dependencies
+- **🚀 Pip Integration** - Leverages pip's dependency resolver for maximum accuracy
+- **📊 Professional Reports** - Detailed analysis with export capabilities
 
 ## 🚀 Quick Start
 
 ### Installation
 
-Clone the repository and navigate to the project directory:
-
 ```bash
-git clone https://github.com/EaminC/Smart-Compat.git
+git clone https://github.com/EaminC/compat.git
 cd compat
 ```
 
-### Basic Usage (Recommended)
+### Basic Usage
 
 ```bash
-# Check compatibility between two packages (hypothetical detection)
-python compat-cli.py "tensorflow==2.8.0" "urllib3"
-python compat-cli.py "pandas" "numpy"
+# Simple compatibility check
+python compat-cli.py simple "requests" "urllib3"
+# Output: YES
 
-# Equivalent to
-python compat-cli.py check "tensorflow==2.8.0" "urllib3"
+# Detailed analysis (default mode)
+python compat-cli.py "tensorflow==2.16.0" "torch==2.2.0"
+
+# Enhanced mode with pip integration
+python compat-cli.py enhanced "pandas>=1.3.0" "numpy<1.21.0" --verbose
+
+# Requirements.txt analysis
+python compat-cli.py requirements file1.txt file2.txt --output report.txt
 ```
 
-### Verbose Output
+## 📋 Detection Modes
+
+### 1. 🎯 Simple Mode (Automation-Friendly)
+
+Perfect for scripts and CI/CD pipelines - returns only YES (compatible) or NO (incompatible).
 
 ```bash
-python compat-cli.py "tensorflow==2.8.0" "torch==1.12.0" --verbose
+python compat-cli.py simple "package1==1.0.0" "package2>=2.0.0"
 ```
 
-## 🔧 Detection Modes
+**Use Cases:**
 
-### 1. Requirements.txt Analysis (New!)
+- Automated dependency validation
+- CI/CD pipeline integration
+- Quick compatibility checks
 
-Analyzes compatibility between multiple requirements.txt files with intelligent version constraint resolution.
+### 2. 🔍 Check Mode (Default)
+
+Comprehensive PyPI-based hypothetical analysis with intelligent suggestions.
 
 ```bash
-python compat-cli.py requirements data/examples/web_app_requirements.txt data/examples/conflicting_requirements.txt
+python compat-cli.py check "requests==2.25.0" "urllib3==2.0.0"
+# or simply:
+python compat-cli.py "requests==2.25.0" "urllib3==2.0.0"
 ```
 
 **Features:**
 
-- **Smart Version Constraint Analysis**: Correctly identifies compatible vs incompatible version specifications
-- **Cross-dependency Conflict Detection**: Finds conflicts between dependencies of different packages
-- **Detailed Reporting**: Line-by-line analysis with conflict explanations
-- **Report Export**: Save detailed analysis reports to file
+- Version existence validation on PyPI
+- Dependency constraint checking
+- Smart package name suggestions
+- Version recommendation system
 
 **Example Output:**
 
 ```
-============================================================
-📋 Requirements.txt Compatibility Analysis Report
-============================================================
-File 1: web_app_requirements.txt
-File 2: conflicting_requirements.txt
+❌ Conflict Type: Dependency Conflict
+Severity: high
+Result: Dependency version conflicts detected:
+requests v2.25.0 requires urllib3 <1.27,>=1.21.1, but you specified urllib3==2.0.0
 
-📊 Summary:
-   • Total unique packages: 11
-   • Compatible packages: 0
-   • Version conflicts: 4
-   • Dependency conflicts: 2
-
-❌ Overall Status: INCOMPATIBLE
-   Found 4 critical conflicts
-
-⚠️ Version Conflicts:
-   • flask:
-     - web_app_requirements.txt: >=2.0.0,<3.0.0 (line 4)
-     - conflicting_requirements.txt: ==1.1.4 (line 4)
-     - Conflict type: Version Constraint Incompatibility
+🎯 Similar versions:
+   • 1.26.18
+   • 1.26.17
+   • 1.26.16
 ```
 
-### 2. Enhanced Detection (Recommended)
+### 3. 🚀 Enhanced Mode (Recommended)
 
-Integrates pip's dependency resolver with advanced version constraint analysis for the most accurate conflict detection.
+Advanced analysis with pip dependency resolver integration and multi-layer conflict detection.
 
 ```bash
-python compat-cli.py enhanced "tensorflow==2.16.1" "torch==2.2.0" --verbose
+python compat-cli.py enhanced "tensorflow==2.16.0" "torch==2.2.0" --verbose
 ```
 
-**Features:**
+**Advanced Features:**
 
 - **Pip Integration**: Uses pip's actual dependency resolution engine
-- **Advanced Version Constraints**: Supports all pip version operators (~=, >=, <=, !=, ==, >, <)
-- **Multi-layer Analysis**: Combines PyPI data, system dependencies, and pip simulation
-- **Intelligent Explanations**: Human-readable version constraint explanations
+- **System Dependencies**: CUDA/cuDNN version conflict detection
+- **Version Constraints**: Complete support for all pip operators (~=, >=, <=, !=, ==, >, <)
+- **Multi-layer Analysis**: Combines PyPI data, pip simulation, and constraint analysis
 
 **Example Output:**
 
 ```
 🚀 Enhanced Mode: Pip-integrated enhanced conflict detection
 ❌ Conflict Type: Dependency Conflict
-Severity: high
 Result: System-level conflicts detected:
 • tensorflow requires CUDA 12.3, but torch requires CUDA 11.8
 
@@ -110,215 +117,296 @@ Result: System-level conflicts detected:
    • System-level dependency analysis
    • Pip dependency resolver simulation
    • Advanced version constraint analysis
+
+✅ Confirmed by pip dependency resolver
 ```
 
-### 3. Hypothetical Detection (Default)
+### 4. 📊 Requirements.txt Analysis
 
-Completely PyPI-based analysis, independent of local installation status.
+Intelligent compatibility analysis between multiple requirements.txt files with detailed reporting.
 
 ```bash
-python compat-cli.py check "package1" "package2"
-python compat-cli.py "package1" "package2"  # Simplified syntax
+python compat-cli.py requirements web_requirements.txt ml_requirements.txt
 ```
+
+**Capabilities:**
+
+- **Smart Constraint Analysis**: Identifies compatible vs incompatible version specifications
+- **Cross-dependency Detection**: Finds conflicts between dependencies of different packages
+- **Line-by-line Analysis**: Precise conflict location reporting
+- **Professional Reports**: Export detailed analysis to file
 
 **Example Output:**
 
 ```
-✅ Conflict Type: No Conflict
-Severity: low
-Result: No conflicts found: tensorflow v2.8.0 and urllib3 v2.4.0 are compatible
+============================================================
+📋 Requirements.txt Compatibility Analysis Report
+============================================================
+File 1: web_requirements.txt
+File 2: ml_requirements.txt
+
+📊 Summary:
+   • Total unique packages: 15
+   • Compatible packages: 8
+   • Version conflicts: 3
+   • Dependency conflicts: 1
+
+❌ Overall Status: INCOMPATIBLE
+   Found 3 critical conflicts
+
+⚠️ Version Conflicts:
+   • numpy:
+     - web_requirements.txt: >=1.19.0 (line 3)
+     - ml_requirements.txt: <1.19.0 (line 5)
+     - Conflict type: Version Constraint Incompatibility
 ```
 
-### 4. Simple Mode (Minimal Output)
+## 🎯 Advanced Features
 
-Ultra-minimal mode that only outputs YES (compatible) or NO (incompatible).
+### Smart Suggestions System
+
+**Package Name Corrections:**
 
 ```bash
-python compat-cli.py simple "requests==2.25.0" "urllib3==1.26.0"
+python compat-cli.py check "reqests" "numpy"
 ```
-
-**Example Output:**
-
-```
-YES
-```
-
-**Perfect for scripting and automation!**
-
-## 📋 Command Line Options
-
-### Global Options
-
-- `--version` - Show version information
-- `--verbose, -v` - Enable verbose output (not available in simple mode)
-- `--no-suggestions` - Disable package name suggestions
-
-### Commands
-
-| Command        | Description                                                           |
-| -------------- | --------------------------------------------------------------------- |
-| `requirements` | Requirements.txt compatibility analysis (recommended for files)       |
-| `enhanced`     | Pip-integrated enhanced conflict detection (recommended for packages) |
-| `check`        | Hypothetical compatibility detection (default)                        |
-| `simple`       | Simple mode for minimal output (YES/NO only)                          |
-
-## 🎯 Use Cases
-
-- **📋 Dependency Planning** - Evaluate package combination compatibility before installation
-- **🔍 Version Selection** - Find compatible version combinations
-- **⚠️ Risk Assessment** - Discover potential system-level conflicts
-- **📊 Ecosystem Analysis** - Research Python package ecosystem interactions
-
-## 📄 Output Examples
-
-### Dependency Version Constraint Conflicts
-
-```
-❌ Conflict Type: Dependency Conflict
-Severity: high
-Result: Dependency version conflicts detected:
-requests v2.25.0 requires urllib3 <1.27,>=1.21.1, but you specified urllib3==2.0.0
-
-📦 Package Information:
-   • requests v2.25.0
-     └─ Python HTTP for Humans.
-   • urllib3 v2.0.0
-     └─ HTTP library with thread-safe connection pooling, file post, and more.
-```
-
-### No Conflicts
-
-```
-✅ Conflict Type: No Conflict
-Severity: low
-Result: No conflicts found: tensorflow v2.8.0 and urllib3 v2.4.0 are compatible
-
-📦 Package Information:
-   • tensorflow v2.8.0
-     └─ TensorFlow is an open source machine learning framework
-   • urllib3 v2.4.0
-     └─ HTTP library with thread-safe connection pooling
-```
-
-### CUDA Version Conflicts
-
-```
-❌ Conflict Type: Dependency Conflict
-Severity: high
-Result: System-level conflicts detected:
-• tensorflow requires CUDA 11.2, but torch requires CUDA 11.3
-
-🔍 Advanced Conflict Analysis:
-   1. 🖥️ System Dependency: tensorflow requires CUDA 11.2, but torch requires CUDA 11.3
-      • tensorflow==2.8.0: CUDA 11.2
-      • torch==1.12.0: CUDA 11.3
-```
-
-### Version Not Found
-
-```
-❌ Conflict Type: Version Conflict
-Severity: high
-Result: Version not found: requests v2.1.099 does not exist on PyPI
-
-📋 Available versions:
-   • 2.1.0
-   • 2.19.0
-   • 2.10.0
-   • 2.11.0
-   • 2.12.0
-
-🆕 Latest version: 2.9.2
-```
-
-### Package Name Suggestions
 
 ```
 🔍 Conflict Type: Package Not Found
-Severity: info
 Result: Package 'reqests' not found on PyPI
 
 💡 Suggestions:
    🔤 Possible typo corrections:
       • requests
    📦 Similar package names:
-      • requests (similarity: 0.78)
+      • requests (similarity: 0.783)
 ```
+
+**Version Recommendations:**
+
+```bash
+python compat-cli.py check "numpy==999.0.0" "pandas"
+```
+
+```
+❌ Conflict Type: Version Conflict
+Result: Version not found: numpy v999.0.0 does not exist on PyPI
+
+🎯 Similar versions:
+   • 1.26.2
+   • 1.26.1
+   • 1.26.0
+
+🆕 Latest version: 1.26.2
+```
+
+### System-Level Conflict Detection
+
+Detects conflicts in system dependencies like CUDA versions:
+
+```bash
+python compat-cli.py enhanced "tensorflow==2.8.0" "torch==1.12.0"
+```
+
+```
+❌ System-level conflicts detected:
+• tensorflow requires CUDA 11.2, but torch requires CUDA 11.3
+• tensorflow requires cuDNN 8.1, but torch requires cuDNN 8.3
+```
+
+## 📋 Command Reference
+
+### Global Options
+
+| Option             | Description                     |
+| ------------------ | ------------------------------- |
+| `--version`        | Show version information        |
+| `--verbose, -v`    | Enable detailed output          |
+| `--no-suggestions` | Disable intelligent suggestions |
+
+### Commands
+
+| Command        | Description                       | Best For                 |
+| -------------- | --------------------------------- | ------------------------ |
+| `simple`       | YES/NO output only                | Automation, scripting    |
+| `check`        | Default hypothetical analysis     | General use, development |
+| `enhanced`     | Pip-integrated advanced detection | Production environments  |
+| `requirements` | Requirements.txt comparison       | Project planning, audits |
+
+### Requirements Command Options
+
+| Option              | Description                         |
+| ------------------- | ----------------------------------- |
+| `--output, -o FILE` | Save detailed report to file        |
+| `--verbose, -v`     | Include additional analysis details |
 
 ## 🏗️ Architecture
 
-The tool consists of four main detector classes:
-
-1. **PackageConflictDetector** - Basic version and dependency conflict detection
-2. **AdvancedConflictDetector** - Adds CUDA version conflicts and transitive dependency analysis
-3. **HypotheticalConflictDetector** - Complete PyPI-based analysis independent of local installations
-4. **EnhancedConflictDetector** - Integrates pip's dependency resolver with advanced version constraint analysis
-
-### Key Design Principles
-
-- **Strict Version Handling**: When a specified version doesn't exist, the tool reports an error instead of falling back to other versions
-- **PyPI-First Approach**: Hypothetical mode queries PyPI directly for accurate version information
-- **Intelligent Suggestions**: Provides spelling corrections and similar package recommendations
-- **Comprehensive Conflict Detection**: Covers system-level dependencies, transitive conflicts, and basic version mismatches
-
-## 📁 Project Structure
+### Modular Design
 
 ```
 compat/
-├── compat-cli.py              # Unified CLI entry point
-├── compat/
-│   ├── __init__.py            # Package initialization
-│   └── core/
-│       ├── detector.py        # Basic conflict detector
-│       ├── hypothetical_detector.py  # Hypothetical detector (default mode)
-│       ├── enhanced_detector.py     # Enhanced detector with pip integration
-│       ├── advanced_detector.py    # Advanced detector (used by hypothetical)
-│       ├── requirements_analyzer.py # Requirements.txt compatibility analyzer
-│       ├── pip_resolver.py    # Pip dependency resolver integration
-│       ├── version_resolver.py      # Advanced version constraint resolver
-│       ├── suggestions.py     # Package name and version suggestions
-│       └── types.py           # Common types and enums
-├── data/
-│   ├── examples/              # Example requirements.txt files
-│   │   ├── web_app_requirements.txt
-│   │   ├── data_science_requirements.txt
-│   │   ├── conflicting_requirements.txt
-│   │   └── test_requirements*.txt
-│   └── reports/               # Generated analysis reports
-└── README.md                  # This file
+├── detectors/           # Core conflict detection engines
+│   ├── basic.py        # Base functionality
+│   ├── advanced.py     # System-level analysis
+│   ├── hypothetical.py # PyPI-based detection
+│   └── enhanced.py     # Pip integration
+├── analyzers/          # Specialized analysis tools
+│   └── requirements_analyzer.py
+├── utils/              # Supporting utilities
+│   ├── suggestions.py  # Smart recommendations
+│   ├── pip_resolver.py # Pip integration
+│   └── version_resolver.py # Version constraints
+└── core/
+    └── types.py       # Common data structures
 ```
 
-## 🔄 Recent Improvements
+### Detection Engine Hierarchy
 
-### Critical Bug Fixes
+1. **PackageConflictDetector** (Basic)
 
-- **Fixed Dependency Version Constraint Detection**: Resolved critical issue where the tool failed to detect real dependency conflicts like `requests==2.25.0` vs `urllib3==2.0.0`
-- **Improved Dependency Parsing**: Enhanced regex parsing to correctly handle complex dependency specifications with parentheses and multiple constraints (e.g., `urllib3 (<1.27,>=1.21.1)`)
-- **Accurate Version Constraint Validation**: Implemented proper version constraint checking using the `packaging` library with fallback to custom logic
-- **Fixed Fallback Logic**: Removed problematic fallback from PyPI to local installations when specified versions don't exist
-- **Strict Version Validation**: Tool now correctly reports when requested versions don't exist on PyPI
-- **Improved Error Messaging**: Clear distinction between package not found and version not found scenarios
-- **Version Suggestion Enhancement**: Fixed latest version detection and provided intelligent similar version suggestions
+   - Core version and dependency validation
+   - PyPI package existence checking
+   - Basic conflict resolution
 
-### Enhanced Features
+2. **AdvancedConflictDetector** (Advanced)
 
-- **Pip Integration**: Added pip dependency resolver integration for more accurate conflict detection
-- **Advanced Version Constraints**: Complete support for all pip version operators (~=, >=, <=, !=, ==, >, <)
-- **Multi-layer Analysis**: Combines PyPI data, system dependencies, pip simulation, and version constraint analysis
-- **Better Output Formatting**: Eliminated duplicate version suggestions and enhanced readability
-- **Comprehensive Testing**: Full test suite covering all detection modes and edge cases
-- **Unified CLI**: Single entry point with multiple subcommands for different detection modes
+   - Extends basic with system-level analysis
+   - CUDA/cuDNN version conflict detection
+   - Transitive dependency analysis
+
+3. **HypotheticalConflictDetector** (Default)
+
+   - Complete PyPI-based analysis
+   - Independent of local installations
+   - Enhanced error handling and suggestions
+
+4. **EnhancedConflictDetector** (Recommended)
+   - Integrates pip's dependency resolver
+   - Multi-layer conflict detection
+   - Advanced version constraint analysis
+
+## 🔧 Technical Highlights
+
+### Dependency Parsing Engine
+
+Handles complex dependency specifications with robust regex parsing:
+
+```python
+# Correctly parses complex constraints like:
+"urllib3 (<1.27,>=1.21.1)"
+"tensorflow-gpu>=2.0.0,<3.0.0"
+"numpy~=1.19.0"
+```
+
+### Version Constraint Validation
+
+Uses the `packaging` library with intelligent fallback for maximum compatibility:
+
+```python
+# Supports all pip version operators:
+">= 1.0.0"    # Greater than or equal
+"~= 1.4.2"    # Compatible release
+"!= 1.5"      # Not equal
+"< 2.0, >= 1.5"  # Multiple constraints
+```
+
+### PyPI Integration
+
+Direct PyPI API integration for real-time package information:
+
+- Version existence validation
+- Latest version detection
+- Available version enumeration
+- Dependency specification parsing
+
+## 📊 Use Cases
+
+### Development Workflows
+
+- **Pre-installation Validation**: Check compatibility before installing packages
+- **Version Planning**: Find compatible version combinations
+- **Dependency Auditing**: Analyze existing dependency files
+
+### Production Environments
+
+- **CI/CD Integration**: Automated compatibility validation in pipelines
+- **Risk Assessment**: Identify potential system-level conflicts
+- **Environment Migration**: Validate package compatibility across environments
+
+### Research & Analysis
+
+- **Ecosystem Analysis**: Study Python package interaction patterns
+- **Conflict Research**: Investigate dependency resolution challenges
+- **Version Impact Assessment**: Understand upgrade implications
+
+## 🚀 Performance & Reliability
+
+### Optimized Design
+
+- **Intelligent Caching**: Reduces PyPI API calls with smart caching
+- **Timeout Handling**: Graceful handling of network issues
+- **Error Recovery**: Robust fallback mechanisms for reliability
+
+### Accuracy Improvements
+
+- **Fixed Critical Bugs**: Resolved dependency parsing failures
+- **Enhanced Validation**: Proper version constraint checking
+- **Strict Version Handling**: Clear distinction between package and version errors
+
+## 📈 Recent Improvements (v2.0.0)
+
+### Critical Bug Fixes ✅
+
+- **Dependency Detection**: Fixed critical issue where `requests==2.25.0` vs `urllib3==2.0.0` conflicts weren't detected
+- **Parsing Engine**: Enhanced regex to handle complex dependency specs like `urllib3 (<1.27,>=1.21.1)`
+- **Version Validation**: Implemented proper constraint checking using `packaging` library
+- **Error Handling**: Improved distinction between package not found vs version not found
+
+### New Features 🆕
+
+- **Requirements.txt Analysis**: Complete compatibility analysis between dependency files
+- **Pip Integration**: Direct integration with pip's dependency resolver
+- **Smart Suggestions**: Enhanced typo correction and version recommendations
+- **Multi-layer Detection**: Combines PyPI data, system analysis, and pip simulation
+
+### Architecture Improvements 🏗️
+
+- **Modular Design**: Reorganized into logical modules (detectors, analyzers, utils)
+- **Unified CLI**: Single entry point with multiple specialized commands
+- **Professional Output**: Enhanced formatting and reporting capabilities
+
+## 📁 Example Files
+
+The `data/examples/` directory contains sample requirements.txt files for testing:
+
+- `web_app_requirements.txt` - Typical web application dependencies
+- `data_science_requirements.txt` - Machine learning and data science packages
+- `conflicting_requirements.txt` - Deliberately conflicting dependencies for testing
+- `test_requirements*.txt` - Various test scenarios
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please see our contributing guidelines for:
+
+- Code style and standards
+- Testing requirements
+- Pull request process
+- Issue reporting
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔗 Related Tools
 
-- [pip-tools](https://github.com/jazzband/pip-tools) - A set of tools to keep your pinned Python dependencies fresh
-- [pipdeptree](https://github.com/tox-dev/pipdeptree) - Display dependency tree of packages
-- [safety](https://github.com/pyupio/safety) - Check Python dependencies for known security vulnerabilities
+- [pip-tools](https://github.com/jazzband/pip-tools) - Dependency management
+- [pipdeptree](https://github.com/tox-dev/pipdeptree) - Dependency visualization
+- [safety](https://github.com/pyupio/safety) - Security vulnerability scanning
+- [pipenv](https://github.com/pypa/pipenv) - Package and virtual environment management
+
+---
+
+**Made with ❤️ for the Python community**
+
+_For support, feature requests, or bug reports, please open an issue on GitHub._

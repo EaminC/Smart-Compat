@@ -113,7 +113,7 @@ class HypotheticalConflictDetector(AdvancedConflictDetector):
         return None
 
     def _generate_version_not_found_result(self, package_name: str, version_spec: str) -> ConflictResult:
-        """生成版本不存在的结果，包含版本建议"""
+        """生成版本不存在的结果，包含版本建议和包名建议"""
         # 提取版本号
         version_number = version_spec
         operator = None
@@ -134,12 +134,19 @@ class HypotheticalConflictDetector(AdvancedConflictDetector):
         # 尝试获取可用版本建议
         if self.enable_suggestions:
             try:
+                # 首先尝试获取版本建议
                 suggestions = self.suggester.generate_version_suggestions(package_name, version_number)
                 if suggestions.get('suggested_versions'):
                     details["version_check"] = suggestions
+                else:
+                    # 如果没有版本建议，可能是包名错误，提供包名建议
+                    package_suggestions = self.suggester.generate_suggestions(package_name)
+                    if any(package_suggestions.values()):
+                        details["suggestions"] = package_suggestions
+                        base_message = f"Package or version not found: {package_name} v{version_number} does not exist on PyPI"
                         
             except Exception as e:
-                print(f"Warning: Failed to get version suggestions: {e}")
+                print(f"Warning: Failed to get suggestions: {e}")
         
         return ConflictResult(
             conflict_type=ConflictType.VERSION_CONFLICT,
