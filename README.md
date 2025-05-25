@@ -18,7 +18,7 @@ A comprehensive Python package conflict detection tool with intelligent features
 Clone the repository and navigate to the project directory:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/EaminC/Smart-Compat.git
 cd compat
 ```
 
