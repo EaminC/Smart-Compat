@@ -1,0 +1,7 @@
+# Test requirements file 3 - compatible version
+requests==2.25.0
+numpy>=1.19.0
+pandas>=1.2.0
+flask>=2.0.0
+click>=8.0.0
+urllib3>=1.25.0,<1.27 

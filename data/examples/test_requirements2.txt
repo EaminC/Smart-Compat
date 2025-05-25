@@ -1,0 +1,7 @@
+# Test requirements file 2  
+requests==2.25.0
+numpy>=1.18.0
+pandas==1.4.0
+django>=4.0.0
+click==7.0.0
+urllib3==2.0.0 

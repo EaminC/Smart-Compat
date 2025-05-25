@@ -1,0 +1,50 @@
+============================================================
+📋 Requirements.txt Compatibility Analysis Report
+============================================================
+File 1: test_requirements1.txt
+File 2: test_requirements2.txt
+
+📊 Summary:
+   • Total unique packages: 7
+   • Compatible packages: 1
+   • Version conflicts: 4
+   • Dependency conflicts: 1
+   • Only in test_requirements1.txt: 1
+   • Only in test_requirements2.txt: 1
+
+❌ Overall Status: INCOMPATIBLE
+   Found 4 critical conflicts
+
+⚠️ Version Conflicts:
+   • urllib3:
+     - test_requirements1.txt: >=1.21.1,<1.27 (line 7)
+     - test_requirements2.txt: ==2.0.0 (line 7)
+     - Conflict type: Version Conflict
+   • numpy:
+     - test_requirements1.txt: >=1.20.0 (line 3)
+     - test_requirements2.txt: >=1.18.0 (line 3)
+     - Conflict type: Version Conflict
+   • pandas:
+     - test_requirements1.txt: ==1.3.0 (line 4)
+     - test_requirements2.txt: ==1.4.0 (line 4)
+     - Conflict type: Version Conflict
+   • click:
+     - test_requirements1.txt: ==8.0.0 (line 6)
+     - test_requirements2.txt: ==7.0.0 (line 6)
+     - Conflict type: Version Conflict
+
+🔗 Dependency Conflicts:
+   • flask ↔ click
+     Reason: Dependency version conflicts detected:
+Flask v2.0.0 requires click >=7.1.2, but you specified click==7.0.0
+
+📦 Only in test_requirements1.txt:
+   • flask
+
+📦 Only in test_requirements2.txt:
+   • django
+
+✅ Compatible packages:
+   • requests
+
+============================================================

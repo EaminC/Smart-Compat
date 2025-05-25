@@ -1,0 +1,55 @@
+============================================================
+📋 Requirements.txt Compatibility Analysis Report
+============================================================
+File 1: web_app_requirements.txt
+File 2: conflicting_requirements.txt
+
+📊 Summary:
+   • Total unique packages: 11
+   • Compatible packages: 0
+   • Version conflicts: 4
+   • Dependency conflicts: 2
+   • Only in web_app_requirements.txt: 4
+   • Only in conflicting_requirements.txt: 3
+
+❌ Overall Status: INCOMPATIBLE
+   Found 4 critical conflicts
+
+⚠️ Version Conflicts:
+   • requests:
+     - web_app_requirements.txt: >=2.25.0 (line 8)
+     - conflicting_requirements.txt: ==2.20.0 (line 7)
+     - Conflict type: Version Constraint Incompatibility
+   • flask:
+     - web_app_requirements.txt: >=2.0.0,<3.0.0 (line 4)
+     - conflicting_requirements.txt: ==1.1.4 (line 4)
+     - Conflict type: Version Constraint Incompatibility
+   • werkzeug:
+     - web_app_requirements.txt: >=2.0.0 (line 5)
+     - conflicting_requirements.txt: ==1.0.0 (line 5)
+     - Conflict type: Version Constraint Incompatibility
+   • click:
+     - web_app_requirements.txt: >=7.0.0 (line 7)
+     - conflicting_requirements.txt: ==6.0.0 (line 6)
+     - Conflict type: Version Constraint Incompatibility
+
+🔗 Dependency Conflicts:
+   • werkzeug ↔ flask
+     Reason: Dependency version conflicts detected:
+Flask v1.1.4 requires Werkzeug <2.0,>=0.15, but you specified Werkzeug==2.0.0
+   • jinja2 ↔ flask
+     Reason: Dependency version conflicts detected:
+Flask v1.1.4 requires Jinja2 <3.0,>=2.10.1, but you specified Jinja2==3.0.0
+
+📦 Only in web_app_requirements.txt:
+   • flask-sqlalchemy
+   • gunicorn
+   • jinja2
+   • sqlalchemy
+
+📦 Only in conflicting_requirements.txt:
+   • django
+   • fastapi
+   • urllib3
+
+============================================================
