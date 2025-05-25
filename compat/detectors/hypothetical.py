@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 Hypothetical Package Conflict Detector
-支持假设性兼容性检测 - 检查指定版本组合的兼容性，而不是当前系统状态
+PyPI-based analysis independent of local installation
 """
 
 import re
 import json
 import urllib.request
 from typing import Dict, List, Optional, Tuple, Set
-from .advanced_detector import AdvancedConflictDetector
-from .types import ConflictResult, ConflictType, PackageInfo
+from .advanced import AdvancedConflictDetector
+from ..core.types import ConflictResult, ConflictType, PackageInfo
 
 
 class HypotheticalConflictDetector(AdvancedConflictDetector):

@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Pip-based Dependency Resolver
-利用pip的依赖解析能力进行更精准的冲突检测
+Pip Dependency Resolver Integration
+Integrates with pip's dependency resolution for accurate conflict detection
 """
 
 import subprocess
 import json
 import tempfile
 import os
+import re
 from typing import Dict, List, Optional, Tuple, Set
-from .types import ConflictResult, ConflictType
+from ..core.types import ConflictResult, ConflictType
 
 
 class PipDependencyResolver:

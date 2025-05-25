@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Advanced Version Constraint Resolver
-支持完整pip版本约束语法的解析器
+Version Constraint Resolver
+Advanced version constraint analysis and resolution
 """
 
 import re
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Any
 from packaging import version
 from packaging.specifiers import SpecifierSet, InvalidSpecifier
+
+from ..core.types import ConflictResult, ConflictType
 
 
 class VersionConstraintResolver:

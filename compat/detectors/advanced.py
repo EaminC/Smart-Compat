@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 """
 Advanced Package Conflict Detector
-Enhanced version that can detect:
-1. Transitive dependency version conflicts
-2. System-level dependency conflicts (CUDA, etc.)
-3. Runtime environment incompatibilities
+Extends basic detection with system-level dependency analysis and transitive conflicts
 """
 
+import sys
+import subprocess
 import re
+from typing import Dict, List, Tuple, Optional
+import tempfile
+import os
 import json
-import urllib.request
-from typing import Dict, List, Optional, Tuple, Set
-from .detector import PackageConflictDetector
-from .types import ConflictResult, ConflictType, PackageInfo
+
+from .basic import PackageConflictDetector
+from ..core.types import ConflictResult, ConflictType, PackageInfo
 
 
 class AdvancedConflictDetector(PackageConflictDetector):

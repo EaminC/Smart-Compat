@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Package conflict detector - Python pip specific version
+Basic Package Conflict Detector
+Core functionality for detecting package conflicts
 """
 
 import re
-import subprocess
-from typing import Dict, List, Tuple, Optional
+import json
+import urllib.request
+import urllib.error
+from typing import Dict, List, Optional, Tuple, Set
 
-from .types import ConflictType, ConflictResult, PackageInfo
-from .suggestions import PackageNameSuggester
+from ..utils.suggestions import PackageNameSuggester
+from ..core.types import ConflictResult, ConflictType, PackageInfo
 
 
 class PackageConflictDetector:

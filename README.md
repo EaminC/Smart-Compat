@@ -110,10 +110,6 @@ Result: System-level conflicts detected:
    • System-level dependency analysis
    • Pip dependency resolver simulation
    • Advanced version constraint analysis
-
-📋 Version Constraints:
-   Package 1: Exactly version 2.16.1
-   Package 2: Exactly version 2.2.0
 ```
 
 ### 3. Hypothetical Detection (Default)
@@ -133,58 +129,28 @@ Severity: low
 Result: No conflicts found: tensorflow v2.8.0 and urllib3 v2.4.0 are compatible
 ```
 
-### 4. Advanced Detection
+### 4. Simple Mode (Minimal Output)
 
-Includes system-level dependencies (CUDA, etc.) and transitive dependency conflict detection.
+Ultra-minimal mode that only outputs YES (compatible) or NO (incompatible).
 
 ```bash
-python compat-cli.py advanced "tensorflow" "torch"
+python compat-cli.py simple "requests==2.25.0" "urllib3==1.26.0"
 ```
 
 **Example Output:**
 
 ```
-❌ Conflict Type: Dependency Conflict
-Severity: high
-Result: System-level conflicts detected:
-• tensorflow requires CUDA 11.2, but torch requires CUDA 11.3
-
-🔍 Advanced Conflict Analysis:
-   1. 🖥️ System Dependency: tensorflow requires CUDA 11.2, but torch requires CUDA 11.3
-      • tensorflow: CUDA 11.2
-      • torch: CUDA 11.3
+YES
 ```
 
-### 5. Basic Detection
-
-Basic version and dependency conflict detection.
-
-```bash
-python compat-cli.py basic "requests==2.28.0" "urllib3"
-```
-
-## 🧪 Testing
-
-Run the complete test suite:
-
-```bash
-python compat-cli.py test --verbose
-```
-
-**Test Coverage:**
-
-- ✅ Basic conflict detection
-- ✅ Advanced conflict detection (CUDA, transitive dependencies)
-- ✅ Hypothetical compatibility detection
-- ✅ Version existence validation
-- ✅ Package name suggestion functionality
+**Perfect for scripting and automation!**
 
 ## 📋 Command Line Options
 
 ### Global Options
 
 - `--version` - Show version information
-- `--verbose, -v` - Enable verbose output
+- `--verbose, -v` - Enable verbose output (not available in simple mode)
 - `--no-suggestions` - Disable package name suggestions
 
 ### Commands
@@ -194,9 +160,7 @@ python compat-cli.py test --verbose
 | `requirements` | Requirements.txt compatibility analysis (recommended for files)       |
 | `enhanced`     | Pip-integrated enhanced conflict detection (recommended for packages) |
 | `check`        | Hypothetical compatibility detection (default)                        |
-| `advanced`     | Advanced conflict detection with system-level analysis                |
-| `basic`        | Basic conflict detection                                              |
-| `test`         | Run test suite                                                        |
+| `simple`       | Simple mode for minimal output (YES/NO only)                          |
 
 ## 🎯 Use Cases
 
@@ -303,17 +267,17 @@ The tool consists of four main detector classes:
 compat/
 ├── compat-cli.py              # Unified CLI entry point
 ├── compat/
-│   ├── core/
-│   │   ├── detector.py        # Basic conflict detector
-│   │   ├── advanced_detector.py  # Advanced conflict detector
-│   │   ├── hypothetical_detector.py  # Hypothetical detector
-│   │   ├── enhanced_detector.py     # Enhanced detector with pip integration
-│   │   ├── requirements_analyzer.py # Requirements.txt compatibility analyzer
-│   │   ├── pip_resolver.py    # Pip dependency resolver integration
-│   │   ├── version_resolver.py      # Advanced version constraint resolver
-│   │   └── types.py           # Common types and enums
-│   └── utils/
-│       └── suggestions.py     # Package name suggestions
+│   ├── __init__.py            # Package initialization
+│   └── core/
+│       ├── detector.py        # Basic conflict detector
+│       ├── hypothetical_detector.py  # Hypothetical detector (default mode)
+│       ├── enhanced_detector.py     # Enhanced detector with pip integration
+│       ├── advanced_detector.py    # Advanced detector (used by hypothetical)
+│       ├── requirements_analyzer.py # Requirements.txt compatibility analyzer
+│       ├── pip_resolver.py    # Pip dependency resolver integration
+│       ├── version_resolver.py      # Advanced version constraint resolver
+│       ├── suggestions.py     # Package name and version suggestions
+│       └── types.py           # Common types and enums
 ├── data/
 │   ├── examples/              # Example requirements.txt files
 │   │   ├── web_app_requirements.txt

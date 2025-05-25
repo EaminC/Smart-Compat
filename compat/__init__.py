@@ -2,22 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 Compat - Package Conflict Detection Tool
-A powerful tool for detecting conflicts between two packages in different package managers.
+A simplified tool for detecting conflicts between Python packages.
 """
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __author__ = "Compat Team"
-__description__ = "Package Conflict Detection Tool"
+__description__ = "Simplified Package Conflict Detection Tool"
 
-from .core.detector import PackageConflictDetector
-from .core.universal_detector import UniversalPackageConflictDetector
-from .core.types import ConflictType, PackageManager, ConflictResult, PackageInfo
+from .detectors.basic import PackageConflictDetector
+from .detectors.hypothetical import HypotheticalConflictDetector
+from .detectors.enhanced import EnhancedConflictDetector
+from .analyzers.requirements_analyzer import RequirementsCompatibilityAnalyzer
+from .core.types import ConflictType, ConflictResult, PackageInfo
 
 __all__ = [
     "PackageConflictDetector",
-    "UniversalPackageConflictDetector", 
+    "HypotheticalConflictDetector",
+    "EnhancedConflictDetector", 
+    "RequirementsCompatibilityAnalyzer",
     "ConflictType",
-    "PackageManager",
     "ConflictResult",
     "PackageInfo",
 ] 

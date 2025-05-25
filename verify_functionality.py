@@ -7,7 +7,7 @@ import subprocess
 import sys
 import os
 
-def run_test(cmd, description):
+def run_test(cmd, description, expect_conflict=False):
     """Run a test command and report results"""
     print(f"\n🧪 Testing: {description}")
     print(f"Command: {cmd}")
@@ -15,12 +15,26 @@ def run_test(cmd, description):
     
     try:
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
-        if result.returncode == 0:
-            print("✅ SUCCESS")
-        elif result.returncode == 2:
-            print("⚠️ CONFLICTS DETECTED (as expected)")
+        
+        # For simple mode, check the output content
+        if "simple" in cmd:
+            if result.stdout.strip() in ["YES", "NO"]:
+                if expect_conflict and result.stdout.strip() == "NO":
+                    print("✅ SUCCESS (NO output as expected for conflict)")
+                elif not expect_conflict and result.stdout.strip() == "YES":
+                    print("✅ SUCCESS (YES output as expected for compatibility)")
+                else:
+                    print(f"⚠️ OUTPUT: {result.stdout.strip()}")
+            else:
+                print(f"❌ UNEXPECTED OUTPUT: {result.stdout.strip()}")
         else:
-            print(f"❌ FAILED (exit code: {result.returncode})")
+            # For other modes, use exit code
+            if result.returncode == 0:
+                print("✅ SUCCESS")
+            elif result.returncode == 2:
+                print("⚠️ CONFLICTS DETECTED (as expected)")
+            else:
+                print(f"❌ FAILED (exit code: {result.returncode})")
         
         # Show first few lines of output
         if result.stdout:
@@ -37,10 +51,23 @@ def main():
     print("🚀 Package Conflict Detection Tool - Functionality Verification")
     print("=" * 70)
     
-    # Test basic package detection
+    # Test simple mode (new minimal output)
+    run_test(
+        'python compat-cli.py simple "numpy" "matplotlib"',
+        "Simple mode - compatible packages (should output YES)",
+        expect_conflict=False
+    )
+    
+    run_test(
+        'python compat-cli.py simple "requests==2.25.0" "urllib3==2.0.0"',
+        "Simple mode - conflicting packages (should output NO)",
+        expect_conflict=True
+    )
+    
+    # Test check mode (default)
     run_test(
         'python compat-cli.py "requests==2.25.0" "urllib3==2.0.0"',
-        "Basic package conflict detection"
+        "Check mode (default) - conflict detection"
     )
     
     # Test enhanced mode
@@ -51,7 +78,7 @@ def main():
     
     # Test requirements.txt analysis - compatible
     run_test(
-        'python compat-cli.py requirements data/examples/test_requirements1.txt data/examples/test_requirements3.txt',
+        'python compat-cli.py requirements data/examples/web_app_requirements.txt data/examples/data_science_requirements.txt',
         "Requirements.txt compatibility analysis (compatible)"
     )
     
@@ -63,6 +90,11 @@ def main():
     
     print("\n" + "=" * 70)
     print("🎉 Verification complete! Check results above.")
+    print("\n📋 Summary of available commands:")
+    print("  • simple      - Minimal YES/NO output")
+    print("  • check       - Default hypothetical detection") 
+    print("  • enhanced    - Advanced pip-integrated detection")
+    print("  • requirements - Requirements.txt file analysis")
 
 if __name__ == "__main__":
     main() 

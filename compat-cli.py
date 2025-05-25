@@ -12,12 +12,11 @@ import os
 # Add path for module imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from compat.core.detector import PackageConflictDetector
-from compat.core.advanced_detector import AdvancedConflictDetector
-from compat.core.hypothetical_detector import HypotheticalConflictDetector
+from compat.detectors.basic import PackageConflictDetector
+from compat.detectors.hypothetical import HypotheticalConflictDetector
 from compat.core.types import ConflictType, ConflictResult
-from compat.core.enhanced_detector import EnhancedConflictDetector
-from compat.core.requirements_analyzer import RequirementsCompatibilityAnalyzer
+from compat.detectors.enhanced import EnhancedConflictDetector
+from compat.analyzers.requirements_analyzer import RequirementsCompatibilityAnalyzer
 
 
 def format_conflict_result(result, verbose=False, mode="basic"):
@@ -37,49 +36,18 @@ def format_conflict_result(result, verbose=False, mode="basic"):
     
     # Display mode information
     mode_displays = {
-        "basic": "📦 Basic Mode: Basic conflict detection",
-        "advanced": "🔬 Advanced Mode: Advanced conflict detection",
-        "hypothetical": "🔮 Hypothetical Mode: Hypothetical compatibility detection",
+        "check": "🔮 Hypothetical Mode: Hypothetical compatibility detection",
         "enhanced": "🚀 Enhanced Mode: Pip-integrated enhanced conflict detection"
     }
     
-    if mode != "basic":
-        print(mode_displays.get(mode, mode))
+    if mode in mode_displays:
+        print(mode_displays[mode])
         print("=" * 50)
     
     # Display basic results
     print(f"{severity_icon} Conflict Type: {result.conflict_type.value}")
     print(f"Severity: {result.severity}")
     print(f"Result: {result.message}")
-    
-    # Display advanced conflict details
-    if verbose and result.details and "advanced_conflicts" in result.details:
-        advanced_conflicts = result.details["advanced_conflicts"]
-        
-        print(f"\n🔍 Advanced Conflict Analysis:")
-        for i, conflict in enumerate(advanced_conflicts, 1):
-            conflict_type = conflict.get('type', 'unknown')
-            
-            if conflict_type in ['cuda_version_conflict', 'cudnn_version_conflict']:
-                print(f"   {i}. 🖥️ System Dependency: {conflict['reason']}")
-                if conflict_type == 'cuda_version_conflict':
-                    print(f"      • {conflict['package1']}: CUDA {conflict['cuda1']}")
-                    print(f"      • {conflict['package2']}: CUDA {conflict['cuda2']}")
-                else:
-                    print(f"      • {conflict['package1']}: cuDNN {conflict['cudnn1']}")
-                    print(f"      • {conflict['package2']}: cuDNN {conflict['cudnn2']}")
-            
-            elif conflict_type == 'transitive_dependency_conflict':
-                print(f"   {i}. 🔗 Version Compatibility: {conflict['reason']}")
-                print(f"      • Affected packages: {conflict['package1']}, {conflict['package2']}")
-    
-    # Display dependency conflict details
-    if verbose and result.details and "conflicts" in result.details:
-        conflicts = result.details["conflicts"]
-        if conflicts:
-            print(f"\n🔗 Dependency Conflicts:")
-            for i, conflict in enumerate(conflicts, 1):
-                print(f"   {i}. {conflict}")
     
     # Display enhanced detection details
     if verbose and result.details and result.details.get('enhanced_detection'):
@@ -101,24 +69,6 @@ def format_conflict_result(result, verbose=False, mode="basic"):
         if result.details.get('pip_confirmation'):
             print(f"\n✅ {result.details['pip_confirmation']}")
     
-    # Display version constraint explanations
-    if verbose and result.details and "constraint_analysis" in result.details:
-        constraint_analysis = result.details["constraint_analysis"]
-        constraint_details = constraint_analysis.get('constraint_details', {})
-        
-        if constraint_details.get('pkg1_explanation'):
-            pkg1_explain = constraint_details['pkg1_explanation']
-            if pkg1_explain.get('valid'):
-                print(f"\n📋 Version Constraints:")
-                print(f"   Package 1: {pkg1_explain.get('human_readable', 'N/A')}")
-        
-        if constraint_details.get('pkg2_explanation'):
-            pkg2_explain = constraint_details['pkg2_explanation']
-            if pkg2_explain.get('valid'):
-                if not constraint_details.get('pkg1_explanation'):
-                    print(f"\n📋 Version Constraints:")
-                print(f"   Package 2: {pkg2_explain.get('human_readable', 'N/A')}")
-    
     # Display package information
     if verbose and result.details:
         if 'pkg1' in result.details and 'pkg2' in result.details:
@@ -133,34 +83,6 @@ def format_conflict_result(result, verbose=False, mode="basic"):
             print(f"   • {pkg2['name']} v{pkg2['version']}")
             if pkg2.get('description'):
                 print(f"     └─ {pkg2['description']}")
-    
-    # Display version suggestions
-    if result.details and "version_check" in result.details:
-        version_check = result.details["version_check"]
-        
-        # Display similar versions
-        if version_check.get('similar_versions'):
-            print(f"\n🎯 Similar versions:")
-            for v in version_check['similar_versions'][:5]:
-                print(f"   • {v}")
-        
-        # Display latest version
-        if version_check.get('latest_version'):
-            print(f"\n🆕 Latest version: {version_check['latest_version']}")
-        
-        # Display other available versions (if sufficient)
-        if version_check.get('recent_versions'):
-            recent = version_check['recent_versions']
-            # Filter out already displayed versions
-            similar = version_check.get('similar_versions', [])
-            latest = version_check.get('latest_version', '')
-            
-            unique_recent = [v for v in recent if v not in similar and v != latest]
-            
-            if unique_recent:
-                print(f"\n📋 Recent versions:")
-                for v in unique_recent[:5]:
-                    print(f"   • {v}")
     
     # Display package name suggestions
     if result.details and "suggestions" in result.details:
@@ -177,43 +99,60 @@ def format_conflict_result(result, verbose=False, mode="basic"):
                 print("   📦 Similar package names:")
                 for pkg in suggestions['similar_packages'][:3]:
                     print(f"      • {pkg['name']} (similarity: {pkg['similarity']})")
+    
+    # Display version suggestions for version conflicts
+    if result.details and "version_check" in result.details:
+        version_info = result.details["version_check"]
+        if version_info.get('suggested_versions'):
+            print(f"\n🎯 Similar versions:")
+            for version in version_info['suggested_versions'][:5]:
+                print(f"   • {version}")
+        
+        if version_info.get('latest_version'):
+            print(f"\n🆕 Latest version: {version_info['latest_version']}")
+        
+        if version_info.get('recent_versions'):
+            print(f"\n📋 Recent versions:")
+            for version in version_info['recent_versions'][:4]:
+                print(f"   • {version}")
 
 
-def cmd_basic(args):
-    """Basic conflict detection command"""
-    detector = PackageConflictDetector(enable_suggestions=not args.no_suggestions)
-    result = detector.detect_conflicts(args.package1, args.package2)
-    format_conflict_result(result, verbose=args.verbose, mode="basic")
-    return result
-
-
-def cmd_advanced(args):
-    """Advanced conflict detection command"""
-    detector = AdvancedConflictDetector(enable_suggestions=not args.no_suggestions)
-    result = detector.detect_advanced_conflicts(args.package1, args.package2)
-    format_conflict_result(result, verbose=args.verbose, mode="advanced")
-    return result
-
-
-def cmd_hypothetical(args):
-    """Hypothetical conflict detection command"""
+def cmd_simple(args):
+    """Simple mode - only returns yes/no"""
+    # Use the same detector as check mode to ensure consistency
     detector = HypotheticalConflictDetector(
-        enable_suggestions=not args.no_suggestions,
+        enable_suggestions=False,
         hypothetical_mode=True
     )
     result = detector.detect_hypothetical_conflicts(args.package1, args.package2)
-    format_conflict_result(result, verbose=args.verbose, mode="hypothetical")
-    return result
+    
+    if result.conflict_type == ConflictType.NO_CONFLICT:
+        print("YES")
+        return result
+    else:
+        print("NO")
+        return result
 
 
 def cmd_enhanced(args):
-    """Enhanced conflict detection command (pip integration)"""
+    """Enhanced conflict detection command"""
     detector = EnhancedConflictDetector(
         enable_suggestions=not args.no_suggestions,
         use_pip_resolver=not args.disable_pip
     )
     result = detector.detect_enhanced_conflicts(args.package1, args.package2)
     format_conflict_result(result, verbose=args.verbose, mode="enhanced")
+    return result
+
+
+def cmd_check(args):
+    """Hypothetical conflict detection command"""
+    detector = HypotheticalConflictDetector(
+        enable_suggestions=not args.no_suggestions,
+        hypothetical_mode=True
+    )
+    result = detector.detect_hypothetical_conflicts(args.package1, args.package2)
+    format_conflict_result(result, verbose=args.verbose, mode="check")
     return result
 
 
@@ -265,67 +204,19 @@ def cmd_requirements(args):
         )
 
 
-def cmd_test(args):
-    """Run test suite"""
-    print("🧪 Running Package Conflict Detection Tests")
-    print("=" * 50)
-    
-    # Import test module
-    try:
-        from tests.test_suite import run_all_tests
-        run_all_tests(verbose=args.verbose)
-        return None
-    except ImportError:
-        print("❌ Test suite not found. Please run tests manually.")
-        return None
-
-
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
-        description="Package Conflict Detection Tool - Advanced Python package conflict detection",
+        description="Package Conflict Detection Tool - Simplified Python package conflict detection",
         epilog="Use 'compat-cli.py <command> --help' for more information on a command.",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
     # Global options
-    parser.add_argument('--version', action='version', version='%(prog)s 1.0.0')
+    parser.add_argument('--version', action='version', version='%(prog)s 2.0.0')
     
     # Subcommands
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
-    # basic command
-    basic_parser = subparsers.add_parser('basic', help='Basic conflict detection')
-    basic_parser.add_argument('package1', help='First package specification')
-    basic_parser.add_argument('package2', help='Second package specification')
-    basic_parser.add_argument('--no-suggestions', action='store_true', help='Disable package name suggestions')
-    basic_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
-    basic_parser.set_defaults(func=cmd_basic)
-    
-    # advanced command
-    advanced_parser = subparsers.add_parser('advanced', help='Advanced conflict detection (includes system-level dependency analysis)')
-    advanced_parser.add_argument('package1', help='First package specification')
-    advanced_parser.add_argument('package2', help='Second package specification')
-    advanced_parser.add_argument('--no-suggestions', action='store_true', help='Disable package name suggestions')
-    advanced_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
-    advanced_parser.set_defaults(func=cmd_advanced)
-    
-    # hypothetical command (default)
-    hypo_parser = subparsers.add_parser('check', help='Hypothetical compatibility detection (recommended, default mode)')
-    hypo_parser.add_argument('package1', help='First package specification')
-    hypo_parser.add_argument('package2', help='Second package specification')
-    hypo_parser.add_argument('--no-suggestions', action='store_true', help='Disable package name suggestions')
-    hypo_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
-    hypo_parser.set_defaults(func=cmd_hypothetical)
-    
-    # enhanced command (recommended)
-    enhanced_parser = subparsers.add_parser('enhanced', help='Enhanced conflict detection (pip integration, recommended)')
-    enhanced_parser.add_argument('package1', help='First package specification')
-    enhanced_parser.add_argument('package2', help='Second package specification')
-    enhanced_parser.add_argument('--no-suggestions', action='store_true', help='Disable package name suggestions')
-    enhanced_parser.add_argument('--disable-pip', action='store_true', help='Disable pip resolver')
-    enhanced_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
-    enhanced_parser.set_defaults(func=cmd_enhanced)
     
     # requirements command
     req_parser = subparsers.add_parser('requirements', help='Analyze compatibility between two requirements.txt files')
@@ -336,13 +227,31 @@ def main():
     req_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
     req_parser.set_defaults(func=cmd_requirements)
     
-    # test command
-    test_parser = subparsers.add_parser('test', help='Run test suite')
-    test_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
-    test_parser.set_defaults(func=cmd_test)
+    # enhanced command (recommended)
+    enhanced_parser = subparsers.add_parser('enhanced', help='Enhanced conflict detection (pip integration, recommended)')
+    enhanced_parser.add_argument('package1', help='First package specification')
+    enhanced_parser.add_argument('package2', help='Second package specification')
+    enhanced_parser.add_argument('--no-suggestions', action='store_true', help='Disable package name suggestions')
+    enhanced_parser.add_argument('--disable-pip', action='store_true', help='Disable pip resolver')
+    enhanced_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
+    enhanced_parser.set_defaults(func=cmd_enhanced)
+    
+    # check command (default)
+    check_parser = subparsers.add_parser('check', help='Hypothetical compatibility detection (default mode)')
+    check_parser.add_argument('package1', help='First package specification')
+    check_parser.add_argument('package2', help='Second package specification')
+    check_parser.add_argument('--no-suggestions', action='store_true', help='Disable package name suggestions')
+    check_parser.add_argument('--verbose', '-v', action='store_true', help='Enable verbose output')
+    check_parser.set_defaults(func=cmd_check)
+    
+    # simple command (minimal output)
+    simple_parser = subparsers.add_parser('simple', help='Simple yes/no compatibility check')
+    simple_parser.add_argument('package1', help='First package specification')
+    simple_parser.add_argument('package2', help='Second package specification')
+    simple_parser.set_defaults(func=cmd_simple)
     
     # If no subcommand, default to check
-    if len(sys.argv) >= 3 and not sys.argv[1].startswith('-') and sys.argv[1] not in ['basic', 'advanced', 'check', 'test', 'enhanced', 'requirements']:
+    if len(sys.argv) >= 3 and not sys.argv[1].startswith('-') and sys.argv[1] not in ['requirements', 'enhanced', 'check', 'simple']:
         # User directly entered package names, use default check mode
         sys.argv.insert(1, 'check')
     
@@ -356,9 +265,7 @@ def main():
         result = args.func(args)
         
         # Set exit code based on result
-        if result is None:  # test command
-            sys.exit(0)
-        elif result.conflict_type == ConflictType.NO_CONFLICT:
+        if result.conflict_type == ConflictType.NO_CONFLICT:
             sys.exit(0)
         elif result.severity in ["high", "critical"]:
             sys.exit(2)
@@ -370,7 +277,7 @@ def main():
         sys.exit(130)
     except Exception as e:
         print(f"❌ Error: {e}")
-        if args.verbose:
+        if hasattr(args, 'verbose') and args.verbose:
             import traceback
             traceback.print_exc()
         sys.exit(1)

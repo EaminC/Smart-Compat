@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Enhanced Conflict Detector
-集成pip依赖解析和高级版本约束的增强冲突检测器
+Enhanced Package Conflict Detector
+Integrates pip's dependency resolver with advanced analysis
 """
 
-from typing import Dict, List, Optional, Tuple
-from .hypothetical_detector import HypotheticalConflictDetector
-from .pip_resolver import PipDependencyResolver
-from .version_resolver import VersionConstraintResolver
-from .types import ConflictResult, ConflictType, PackageInfo
+from typing import Dict, List, Optional, Set
+from .hypothetical import HypotheticalConflictDetector
+from ..utils.pip_resolver import PipDependencyResolver
+from ..utils.version_resolver import VersionConstraintResolver
+from ..core.types import ConflictResult, ConflictType, PackageInfo
 
 
 class EnhancedConflictDetector(HypotheticalConflictDetector):

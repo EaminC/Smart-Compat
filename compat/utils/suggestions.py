@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Package name suggestion module
+Package Name and Version Suggestions
 Provides intelligent suggestions for misspelled or non-existent package names
 """
 
 import re
 import json
 import urllib.request
-import urllib.parse
-import difflib
-from typing import List, Dict, Optional, Tuple
+import urllib.error
+from typing import Dict, List, Optional, Tuple
+from difflib import SequenceMatcher
 from collections import Counter
 
 
@@ -66,8 +66,7 @@ class PackageNameSuggester:
         word1, word2 = word1.lower(), word2.lower()
         
         # 1. Levenshtein distance-based similarity
-        import difflib
-        seq_similarity = difflib.SequenceMatcher(None, word1, word2).ratio()
+        seq_similarity = SequenceMatcher(None, word1, word2).ratio()
         
         # 2. Common substring similarity
         common_length = len(self._longest_common_substring(word1, word2))
